@@ -17,6 +17,12 @@ var fontData []byte
 func main() {
 	app := fiber.New()
 
+	// Disable CORS restrictions
+	app.Use(func(c *fiber.Ctx) error {
+		c.Set("Access-Control-Allow-Origin", "*")
+		return c.Next()
+	})
+
 	app.Get("/:z/:x/:y.png", func(c *fiber.Ctx) error {
 		xStr := c.Params("x")
 		yStr := c.Params("y")
