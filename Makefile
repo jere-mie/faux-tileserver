@@ -26,7 +26,7 @@ TAG=$(shell cat version.txt)
 define build_platform
 	@mkdir -p $(OUTPUT_DIR)
 	@echo "Building for $1..."
-	@$(GO) build -o $(OUTPUT_DIR)/fauxts_$1_$2$(if $(findstring windows,$1),.exe,) .
+	@GOOS=$1 GOARCH=$2 $(GO) build -o $(OUTPUT_DIR)/fauxts_$1_$2$(if $(findstring windows,$1),.exe,) .
 endef
 
 .PHONY: all build release clean
@@ -57,4 +57,3 @@ chmod:
 # Clean generated files
 clean:
 	@rm -rf $(OUTPUT_DIR)
-
