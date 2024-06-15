@@ -1,20 +1,31 @@
 package main
 
 import (
-	_ "embed"
+	"embed"
+	"flag"
 	"fmt"
 	"log"
 	"os"
 	"strconv"
 
+	"net/http"
+
 	"github.com/fogleman/gg"
 	"github.com/gofiber/fiber/v2"
+	"github.com/gofiber/fiber/v2/middleware/filesystem"
 )
 
-//go:embed fonts/IBMPlexSans-Bold.ttf
+//go:embed static/IBMPlexSans-Bold.ttf
 var fontData []byte
 
+//go:embed static/*
+var embeddedAssets embed.FS
+
 func main() {
+	// Define the port flag with a default value
+	port := flag.String("port", "3000", "Port to run the server on")
+	flag.Parse()
+
 	app := fiber.New()
 
 	// Disable CORS restrictions
@@ -22,6 +33,13 @@ func main() {
 		c.Set("Access-Control-Allow-Origin", "*")
 		return c.Next()
 	})
+
+	// Serve the embedded assets directory
+	app.Use("/", filesystem.New(filesystem.Config{
+		Root:       http.FS(embeddedAssets),
+		PathPrefix: "static",
+		// Browse:     true,
+	}))
 
 	app.Get("/:z/:x/:y.png", func(c *fiber.Ctx) error {
 		xStr := c.Params("x")
@@ -86,5 +104,6 @@ func main() {
 		return dc.EncodePNG(c.Response().BodyWriter())
 	})
 
-	log.Fatal(app.Listen(":3000"))
+	// Start the server on the specified port
+	log.Fatal(app.Listen(":" + *port))
 }
