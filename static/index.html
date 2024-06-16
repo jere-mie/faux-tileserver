@@ -3,11 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta property="og:title" content="Faux Tile Server Demo" />
+    <meta property="og:name" content="Faux Tile Server" />
+    <meta property="og:title" content="Faux Map Tile Server Demo" />
     <meta property="og:description" content="This project demonstrates a simple tile server implemented using Go Fiber and the gg library. The server generates map tiles dynamically, displaying the X, Y, and Z coordinates. This is especially useful if you're building an offline mapping application and need a self-hosted tile server." />
     <meta property="og:type" content="website" />
 
-    <title>Go Fiber Tile Server Demo</title>
+    <title>Faux Map Tile Server Demo</title>
 
     <link rel="stylesheet" href="/leaflet.css" />
     <style>
@@ -53,7 +54,7 @@
     <script>
         document.getElementById("urltemplate").innerText = `${window.location.origin}/{z}/{x}/{y}.png`
 
-        var map = L.map('map').setView([0, 0], 2);
+        var map = L.map('map').setView([0, 0], 8);
 
         L.tileLayer('/{z}/{x}/{y}.png', {
             maxZoom: 18,

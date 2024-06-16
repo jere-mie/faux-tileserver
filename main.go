@@ -15,13 +15,33 @@ import (
 	"github.com/gofiber/fiber/v2/middleware/filesystem"
 )
 
+// we embed useful files and folders into the built executable, to make shipping it easier
+
 //go:embed static/IBMPlexSans-Bold.ttf
 var fontData []byte
+
+//go:embed version.txt
+var version string
+
+//go:embed README.md
+var readme string
 
 //go:embed static/*
 var embeddedAssets embed.FS
 
 func main() {
+	// Check for the "version", and "readme"/"help" commands
+	if len(os.Args) > 1 {
+		if os.Args[1] == "version" {
+			fmt.Println(version)
+			return
+		}
+		if os.Args[1] == "readme" || os.Args[1] == "help" {
+			fmt.Println(readme)
+			return
+		}
+	}
+
 	// Define the port flag with a default value
 	port := flag.String("port", "3000", "Port to run the server on")
 	flag.Parse()
@@ -38,7 +58,6 @@ func main() {
 	app.Use("/", filesystem.New(filesystem.Config{
 		Root:       http.FS(embeddedAssets),
 		PathPrefix: "static",
-		// Browse:     true,
 	}))
 
 	app.Get("/:z/:x/:y.png", func(c *fiber.Ctx) error {
@@ -101,6 +120,7 @@ func main() {
 		dc.DrawStringAnchored(textZ, W/2, 2*H/3+20, 0.5, 0.5)
 
 		c.Response().Header.Set("Content-Type", "image/png")
+		c.Response().SetStatusCode(fiber.StatusOK) // set status 200. For some reason it was returning 404s without this
 		return dc.EncodePNG(c.Response().BodyWriter())
 	})
 
